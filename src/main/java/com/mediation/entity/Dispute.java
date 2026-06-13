@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -62,12 +63,49 @@ public class Dispute {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
+    @Column(name = "accept_date")
+    private LocalDate acceptDate;
+
+    @Column(name = "close_date")
+    private LocalDate closeDate;
+
+    @Column(name = "time_limit_days")
+    private Integer timeLimitDays;
+
+    @Column(name = "extension_days")
+    @Builder.Default
+    private Integer extensionDays = 0;
+
+    @Column(name = "extension_applied")
+    @Builder.Default
+    private Boolean extensionApplied = false;
+
+    @Column(name = "supervision_count")
+    @Builder.Default
+    private Integer supervisionCount = 0;
+
+    @Column(name = "listing_supervised")
+    @Builder.Default
+    private Boolean listingSupervised = false;
+
     @PrePersist
     protected void onCreate() {
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
         if (this.status == null) {
             this.status = DisputeStatus.待受理;
+        }
+        if (this.extensionDays == null) {
+            this.extensionDays = 0;
+        }
+        if (this.extensionApplied == null) {
+            this.extensionApplied = false;
+        }
+        if (this.supervisionCount == null) {
+            this.supervisionCount = 0;
+        }
+        if (this.listingSupervised == null) {
+            this.listingSupervised = false;
         }
     }
 
@@ -81,6 +119,6 @@ public class Dispute {
     }
 
     public enum DisputeStatus {
-        待受理, 已受理, 调解中, 调解成功, 调解失败, 已撤回
+        待受理, 已受理, 调解中, 调解成功, 调解失败, 已撤回, 已终止
     }
 }
